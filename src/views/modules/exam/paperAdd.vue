@@ -62,12 +62,12 @@
           <el-table-column prop="scores" label="题目分数">
           </el-table-column>
         </el-table>
-        <div style="margin-top:20px;float:right;">
-          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                         :page-sizes="[5, 10, 15, 20]" :page-size="pageSize" :current-page="currentPage" background
-                         layout="total, sizes, prev, pager, next, jumper" :total="total">
-          </el-pagination>
-        </div>
+<!--        <div style="margin-top:20px;float:right;">-->
+<!--          <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"-->
+<!--                         :page-sizes="[10, 15, 20]" :page-size="pageSize" :current-page="currentPage" background-->
+<!--                         layout="total, sizes, prev, pager, next, jumper" :total="total">-->
+<!--          </el-pagination>-->
+<!--        </div>-->
         <div slot="footer" class="dialog-footer" style="margin-top:30px;">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
           <el-button @click="getTableData()" type="primary">确 定
@@ -241,7 +241,7 @@ export default {
       subjectList: [],
       majorList: [],
       tableData: [],
-      pageSize: 5,
+      pageSize: 100,
       currentPage: 1,
       total: 0,
       rules: {

@@ -2,19 +2,15 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-<!--        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>-->
-        <el-select v-model="dataForm.key" clearable placeholder="请选择所属课程">
-          <el-option v-for="item in courseList" :value="item.id" :label="item.name" :key="item.id">
-          </el-option>
-        </el-select>
+        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('exam:question:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('exam:question:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+<!--        <el-button @click="getDataList()">查询</el-button>-->
+<!--        <el-button v-if="isAuth('exam:answerpaper:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
+<!--        <el-button v-if="isAuth('exam:answerpaper:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
     </el-form>
-    <el-tablew
+    <el-table
       :data="dataList"
       border
       v-loading="dataListLoading"
@@ -26,59 +22,47 @@
         align="center"
         width="50">
       </el-table-column>
-      <el-table-column
-        prop="id"
-        header-align="center"
-        align="center"
-        label="ID">
-      </el-table-column>
-      <el-table-column
-        prop="courseName"
-        header-align="center"
-        align="center"
-        label="所属课程">
-      </el-table-column>
-      <el-table-column
-        prop="type"
-        header-align="center"
-        align="center"
-        label="题目类型">
-      </el-table-column>
 <!--      <el-table-column-->
-<!--        prop="imgurl"-->
+<!--        prop="paperId"-->
 <!--        header-align="center"-->
 <!--        align="center"-->
-<!--        label="题目图片">-->
+<!--        label="ID">-->
 <!--      </el-table-column>-->
       <el-table-column
-        prop="content"
+        prop="userName"
         header-align="center"
         align="center"
-        label="题目">
+        label="学生姓名">
       </el-table-column>
       <el-table-column
-        prop="answer"
+        prop="paperName"
         header-align="center"
         align="center"
-        label="答案">
+        label="试卷名称">
       </el-table-column>
       <el-table-column
-        prop="scores"
+        prop="paperTotalScore"
         header-align="center"
         align="center"
-        label="题目满分分数">
+        label="试卷总分">
       </el-table-column>
-<!--      <el-table-column-->
-<!--        prop="deleted"-->
-<!--        header-align="center"-->
-<!--        align="center"-->
-<!--        label="是否删除">-->
-<!--      </el-table-column>-->
       <el-table-column
-        prop="createTime"
+        prop="paperTotalTime"
         header-align="center"
         align="center"
-        label="创建时间">
+        label="考试时间">
+      </el-table-column>
+      <el-table-column
+        prop="userTotalScore"
+        header-align="center"
+        align="center"
+        label="考试得分">
+      </el-table-column>
+      <el-table-column
+        prop="examTime"
+        header-align="center"
+        align="center"
+        label="参加考试时间">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -87,33 +71,32 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
+<!--          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>-->
+          <el-button type="text" size="small" @click="remove(scope.row.paperId)">删除</el-button>
         </template>
       </el-table-column>
-    </el-tablew>
-    <el-pagination
-      @size-change="sizeChangeHandle"
-      @current-change="currentChangeHandle"
-      :current-page="pageIndex"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="pageSize"
-      :total="totalPage"
-      layout="total, sizes, prev, pager, next, jumper">
-    </el-pagination>
+    </el-table>
+<!--    <el-pagination-->
+<!--      @size-change="sizeChangeHandle"-->
+<!--      @current-change="currentChangeHandle"-->
+<!--      :current-page="pageIndex"-->
+<!--      :page-sizes="[10, 20, 50, 100]"-->
+<!--      :page-size="pageSize"-->
+<!--      :total="totalPage"-->
+<!--      layout="total, sizes, prev, pager, next, jumper">-->
+<!--    </el-pagination>-->
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
   </div>
 </template>
 
 <script>
-  import AddOrUpdate from './question-add-or-update'
+  import AddOrUpdate from './answerpaper-add-or-update'
   export default {
     data () {
       return {
-        courseList: [],
         dataForm: {
-          key: null
+          key: ''
         },
         dataList: [],
         pageIndex: 1,
@@ -129,25 +112,13 @@
     },
     activated () {
       this.getDataList()
-      this.getCourse()
     },
     methods: {
-      getCourse () {
-        this.$http({
-          url: this.$http.adornUrl(`/generator/ecourse/list`),
-          method: 'get',
-          params: this.$http.adornParams()
-        }).then(({data}) => {
-          if (data && data.code === 0) {
-            this.courseList = data.page.list
-          }
-        })
-      },
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/exam/question/list'),
+          url: this.$http.adornUrl('/exam/answerpaper/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -156,11 +127,11 @@
           })
         }).then(({data}) => {
           if (data && data.code === 0) {
-            this.dataList = data.page.list
-            this.totalPage = data.page.totalCount
+            this.dataList = data.data
+            // this.totalPage = data.page.totalCount
           } else {
             this.dataList = []
-            this.totalPage = 0
+            // this.totalPage = 0
           }
           this.dataListLoading = false
         })
@@ -198,9 +169,35 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/exam/question/delete'),
+            url: this.$http.adornUrl('/exam/answerpaper/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
+          }).then(({data}) => {
+            if (data && data.code === 0) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 1500,
+                onClose: () => {
+                  this.getDataList()
+                }
+              })
+            } else {
+              this.$message.error(data.msg)
+            }
+          })
+        })
+      },
+      // 删除
+      remove (id) {
+        this.$confirm(`确定对[id=${id}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$http({
+            url: this.$http.adornUrl('/exam/answerpaper/remove/' + id),
+            method: 'post'
           }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
