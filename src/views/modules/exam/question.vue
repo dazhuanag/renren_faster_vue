@@ -14,7 +14,7 @@
         <el-button v-if="isAuth('exam:question:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
-    <el-tablew
+    <el-table
       :data="dataList"
       border
       v-loading="dataListLoading"
@@ -91,7 +91,7 @@
           <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
-    </el-tablew>
+    </el-table>
     <el-pagination
       @size-change="sizeChangeHandle"
       @current-change="currentChangeHandle"
