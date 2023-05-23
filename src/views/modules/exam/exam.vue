@@ -116,7 +116,7 @@
         <el-form-item label="考试时间：" label-width="100px">
           {{ examination.totalTime }} 分钟
         </el-form-item>
-        <el-form-item v-if="examination.type==1" label="输入口令：" label-width="100px">
+        <el-form-item v-if="examination.type===1" label="输入口令：" label-width="100px">
           <el-input v-model="examination.password" clearable></el-input>
         </el-form-item>
       </el-form>
@@ -148,23 +148,24 @@
             {{ index + 1 }}.{{ question.content }}   ( {{ question.score }} 分)
             <div style="margin-top:10px;margin-bottom: 20px;">
               <div>
-                <el-input v-model="question.reply" type="textarea" :rows="5">
+                <el-input v-model="question.reply" disabled type="textarea" :rows="5">
                 </el-input>
-<!--                <el-upload-->
-<!--                  ref="uploadPic"-->
-<!--                  action=""-->
-<!--                  :before-upload="BeforeUpload"-->
-<!--                  :http-request="Upload"-->
-<!--                  :on-preview="handlePreview"-->
-<!--                  :on-remove="handleRemove"-->
-<!--                  :on-success="handleSuccess"-->
-<!--                  :file-list="fileList"-->
-<!--                  :limit = '1'-->
-<!--                  :on-exceed = "handleExceed"-->
-<!--                  :auto-upload="true">-->
-<!--                  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>-->
-<!--                  <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传图片到服务器</el-button>-->
-<!--                </el-upload>-->
+                <el-upload
+                  ref="uploadPic"
+                  action=""
+                  :http-request="Upload"
+                  :before-upload="BeforeUpload"
+                  :on-preview="handlePreview"
+                  :on-remove="handleRemove"
+                  :on-success="handleSuccess"
+                  :file-list="fileList"
+                  :limit = '1'
+                  :on-exceed = "handleExceed"
+                  :data = uploadData
+                  :auto-upload="true">
+                  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+<!--                  <el-button style="margin-left: 10px;" size="small" type="success" @click="Upload(question)">上传图片到服务器</el-button>-->
+                </el-upload>
               </div>`
             </div>
           </div>
@@ -201,6 +202,7 @@ export default {
         totalScore: '',
         paperId: ''
       },
+      questions: [],
       testPaper: {},
       answer: {
         courseName: '',
@@ -209,6 +211,7 @@ export default {
         coursePic: '',
         courseVideo: ''
       },
+      uploadData: {},
       fileList: [],
       newFile: new FormData()
     }
@@ -233,7 +236,7 @@ export default {
     submit () {
       this.dialogFormVisibleExam = false
       console.log('交卷', this.testPaper)
-      this.testPaper.uid =
+      // this.testPaper.uid =
       this.$http({
         url: this.$http.adornUrl(`/exam/answerpaper/save`),
         method: 'post',
@@ -288,8 +291,10 @@ export default {
     //   })
     // },
 
-    Upload () {
+    Upload (question) {
+      console.log('question', question)
       const newData = this.newFile
+      // newData.append('questionId', question.id)
       this.$http({
         url: this.$http.adornUrl('/exam/exam/upload'),
         method: 'post',
@@ -299,15 +304,17 @@ export default {
         }
       }).then(({data}) => {
         if (data && data.code === 0) {
-          this.dataList = data.data
+          console.log('上传成功', data.result)
+          question.imageUrl = data.result
         } else {
         }
       })
     },
     BeforeUpload (file) {
       if (file) {
-        this.newFile.append('file', file)
-        console.log(this.newFile.get('file'))
+        this.newFile.set('file', file)
+        this.uploadData.id = 110
+        console.log('BeforeUpload', this.newFile.get('file'))
       } else {
         return false
       }
@@ -316,14 +323,13 @@ export default {
       this.$refs.uploadPic.submit()
     },
     handleSuccess (response, file, fileList) {
-      console.log('handleSuccess', response)
-      this.answer.coursePic = response.data
+      console.log('handleSuccess111', file, 'fileList', fileList)
     },
     handlePreview (file) {
       console.log('handlePreview', file)
     },
     handleRemove (file, fileList) {
-      console.log(file, fileList)
+      console.log('handleRemove', file, 'fileList', fileList)
     },
     handleExceed (file, fileList) {
       this.$message({
@@ -342,6 +348,7 @@ export default {
       }).then(({data}) => {
         if (data && data.code === 0) {
           this.testPaper = data.data
+          this.questions = data.data.questionList
           this.testPaper.paperId = data.data.id
           this.dialogFormVisibleExam = true
         } else {
