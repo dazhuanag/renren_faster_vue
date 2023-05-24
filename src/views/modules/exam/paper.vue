@@ -121,7 +121,7 @@
             </div>
             <div v-if="question.type=='简答题'" style="margin-top:10px;margin-bottom: 20px;">
               <div>
-                <el-input v-model="question.reply" type="textarea" :rows="5">
+                <el-input v-model="question.reply" disabled  type="textarea" :rows="5">
                 </el-input>
               </div>
             </div>

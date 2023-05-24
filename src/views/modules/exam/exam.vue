@@ -135,9 +135,8 @@
         <div class="questionClass">
           <div class="testPaperHeader">
             <div style="font-size:20px;">{{ testPaper.name }}
-<!--              <el-button type="primary" @click="suresubmit()" style="float:right;margin-top: 10px;margin-left:20px;">退出-->
-<!--              </el-button>-->
-              <el-button type="primary" @click="suresubmit()" style="float:right;margin-top: 10px;margin-left:20px;">交卷
+              <el-button type="primary" @click="suresubmit()" style="float:right;margin-top: 10px;margin-left:20px;">交卷</el-button>
+              <el-button type="primary" @click="dialogFormVisibleExam=false" style="float:right;margin-top: 10px;margin-left:20px;">退出
               </el-button>
             </div>
             <div>考试时间：{{ testPaper.totalTime }}分钟
@@ -148,24 +147,24 @@
             {{ index + 1 }}.{{ question.content }}   ( {{ question.score }} 分)
             <div style="margin-top:10px;margin-bottom: 20px;">
               <div>
-                <el-input v-model="question.reply" disabled type="textarea" :rows="5">
+                <el-input v-model="question.reply" type="textarea" :rows="5">
                 </el-input>
-                <el-upload
-                  ref="uploadPic"
-                  action=""
-                  :http-request="Upload"
-                  :before-upload="BeforeUpload"
-                  :on-preview="handlePreview"
-                  :on-remove="handleRemove"
-                  :on-success="handleSuccess"
-                  :file-list="fileList"
-                  :limit = '1'
-                  :on-exceed = "handleExceed"
-                  :data = uploadData
-                  :auto-upload="true">
-                  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
-<!--                  <el-button style="margin-left: 10px;" size="small" type="success" @click="Upload(question)">上传图片到服务器</el-button>-->
-                </el-upload>
+<!--                <el-upload-->
+<!--                  ref="uploadPic"-->
+<!--                  action=""-->
+<!--                  :http-request="Upload"-->
+<!--                  :before-upload="BeforeUpload"-->
+<!--                  :on-preview="handlePreview"-->
+<!--                  :on-remove="handleRemove"-->
+<!--                  :on-success="handleSuccess"-->
+<!--                  :file-list="fileList"-->
+<!--                  :limit = '1'-->
+<!--                  :on-exceed = "handleExceed"-->
+<!--                  :data = uploadData-->
+<!--                  :auto-upload="true">-->
+<!--                  <el-button slot="trigger" size="small" type="primary">选取文件</el-button>-->
+<!--&lt;!&ndash;                  <el-button style="margin-left: 10px;" size="small" type="success" @click="Upload(question)">上传图片到服务器</el-button>&ndash;&gt;-->
+<!--                </el-upload>-->
               </div>`
             </div>
           </div>

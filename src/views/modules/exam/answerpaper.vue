@@ -2,10 +2,10 @@
   <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
+<!--        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>-->
       </el-form-item>
       <el-form-item>
-<!--        <el-button @click="getDataList()">查询</el-button>-->
+        <el-button @click="getDataList()">刷新</el-button>
 <!--        <el-button v-if="isAuth('exam:answerpaper:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>-->
 <!--        <el-button v-if="isAuth('exam:answerpaper:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>-->
       </el-form-item>
@@ -71,7 +71,8 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-<!--          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>-->
+<!--          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">预览</el-button>-->
+          <el-button type="text" size="small" @click="look(scope.row)">预览</el-button>
           <el-button type="text" size="small" @click="remove(scope.row.paperId)">删除</el-button>
         </template>
       </el-table-column>
@@ -87,6 +88,44 @@
 <!--    </el-pagination>-->
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <div class="testPaper">
+      <el-dialog
+        :visible.sync="dialogFormVisibleTestPaper"
+        :fullscreen="true">
+        <div class="questionClass">
+          <div class="testPaperHeader">
+            <div style="font-size:20px;">{{testpaper.name}}
+              <el-button type="primary" @click="dialogFormVisibleTestPaper=false" style="float:right;margin-top: 10px;margin-left:20px;">关闭
+              </el-button>
+            </div>
+            <div>考试时间：{{testpaper.totalTime}}分钟
+              &nbsp;&nbsp;&nbsp;总分：{{testpaper.totalScore}}
+              &nbsp;&nbsp;&nbsp;考试得分：{{testpaper.userTotalScore}}
+            </div>
+          </div>
+          <div v-for="(question,index) in testpaper.questionList" class="questionClass2">
+            {{index+1}}.{{question.content}} (总分:{{question.score}})
+            <div style="margin-top:10px;">
+              <el-image v-if="question.imgurl" :src="getImg(question.imgurl)"
+                        :preview-src-list="getPreviewImg(question.imgurl)" style="width: 200px; height: 200px">
+              </el-image>
+            </div>
+            <div v-if="question.type=='简答题'" style="margin-top:10px;margin-bottom: 20px;">
+              <div>
+                <el-input v-model="question.answer" disabled  type="textarea" :rows="5">
+                </el-input>
+                <div>
+                  <h3>得分:
+                    <input v-model="question.getScore" disabled>
+                    </input>
+                  </h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -104,7 +143,9 @@
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false
+        addOrUpdateVisible: false,
+        dialogFormVisibleTestPaper: false,
+        testpaper: {}
       }
     },
     components: {
@@ -213,7 +254,59 @@
             }
           })
         })
+      },
+      look (row) {
+        this.dialogFormVisibleTestPaper = true
+        this.$http({
+          url: this.$http.adornUrl('/exam/answerpaper/detail/' + row.paperId),
+          method: 'get',
+          params: this.$http.adornParams({
+            'userId': row.userId
+          })
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            // this.dataList = data.page.list
+            this.testpaper = data.data
+          }
+          this.dataListLoading = false
+        })
       }
     }
   }
 </script>
+<style>
+.questionClass {
+  margin-top: 1px;
+  margin-left: 20%;
+  margin-right: 20%;
+  background: white;
+}
+
+.questionClass2 {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 20px;
+  line-height: 30px;
+  border-bottom: 1px solid black;
+}
+.testPaper .el-dialog {
+  background: #eeeeee;
+}
+
+.testPaper .el-dialog__header {
+  display: none;
+}
+
+.testPaper .dj-dialog-content {
+  padding: 0;
+  overflow: unset;
+}
+
+.testPaperHeader {
+  text-align: center;
+  line-height: 35px;
+  border-bottom: 1px solid black;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+</style>

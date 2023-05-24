@@ -5,6 +5,7 @@
   window.SITE_CONFIG = {};
 
   // api接口请求地址
+  // window.SITE_CONFIG['baseUrl'] = 'https://42z675q546.zicp.fun/renren-fast';
   window.SITE_CONFIG['baseUrl'] = 'http://localhost:8080/renren-fast';
 
   // cdn地址 = 域名 + 版本号
