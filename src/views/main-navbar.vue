@@ -17,24 +17,6 @@
       <el-menu
         class="site-navbar__menu site-navbar__menu--right"
         mode="horizontal">
-<!--        <el-menu-item index="1" @click="$router.push({ name: 'theme' })">-->
-<!--          <template slot="title">-->
-<!--            <el-badge value="new">-->
-<!--              <icon-svg name="shezhi" class="el-icon-setting"></icon-svg>-->
-<!--            </el-badge>-->
-<!--          </template>-->
-<!--        </el-menu-item>-->
-<!--        <el-menu-item index="2">-->
-<!--          <el-badge value="hot">-->
-<!--            <a href="https://www.renren.io/" target="_blank">官方社区</a>-->
-<!--          </el-badge>-->
-<!--        </el-menu-item>-->
-<!--        <el-submenu index="3">-->
-<!--          <template slot="title">Git源码</template>-->
-<!--          <el-menu-item index="2-1"><a href="https://github.com/renrenio/renren-fast-vue" target="_blank">前端</a></el-menu-item>-->
-<!--          <el-menu-item index="2-2"><a href="https://gitee.com/renrenio/renren-fast" target="_blank">后台</a></el-menu-item>-->
-<!--          <el-menu-item index="2-3"><a href="https://gitee.com/renrenio/renren-generator" target="_blank">代码生成器</a></el-menu-item>-->
-<!--        </el-submenu>-->
         <el-menu-item class="site-navbar__avatar" index="3">
           <el-dropdown :show-timeout="0" placement="bottom">
             <span class="el-dropdown-link">
@@ -50,20 +32,24 @@
     </div>
     <!-- 弹窗, 修改密码 -->
     <update-password v-if="updatePassowrdVisible" ref="updatePassowrd"></update-password>
+    <update-userinfo v-if="updateUserInfoVisible" ref="updateUserinfo"></update-userinfo>
   </nav>
 </template>
 
 <script>
   import UpdatePassword from './main-navbar-update-password'
+  import UpdateUserInfo from './main-navbar-update-userinfo'
   import { clearLoginInfo } from '@/utils'
   export default {
     data () {
       return {
-        updatePassowrdVisible: false
+        updatePassowrdVisible: false,
+        updateUserInfoVisible: false
       }
     },
     components: {
-      UpdatePassword
+      UpdatePassword,
+      UpdateUserInfo
     },
     computed: {
       navbarLayoutType: {
@@ -87,6 +73,12 @@
         this.updatePassowrdVisible = true
         this.$nextTick(() => {
           this.$refs.updatePassowrd.init()
+        })
+      },
+      updateUserInfoHandle () {
+        this.updateUserInfoVisible = true
+        this.$nextTick(() => {
+          this.$refs.updateUserinfo.init()
         })
       },
       // 退出

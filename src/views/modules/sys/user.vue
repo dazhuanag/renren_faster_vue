@@ -4,6 +4,10 @@
       <el-form-item>
         <el-input v-model="dataForm.userName" placeholder="用户名" clearable></el-input>
       </el-form-item>
+      <el-select v-model="dataForm.role" clearable placeholder="请选择角色">
+        <el-option v-for="item in roleList" :value="item.roleId" :label="item.roleName" :key="item.roleId">
+        </el-option>
+      </el-select>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <el-button v-if="isAuth('sys:user:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
@@ -34,6 +38,18 @@
         header-align="center"
         align="center"
         label="用户名">
+      </el-table-column>
+      <el-table-column
+        prop="courseName"
+        header-align="center"
+        align="center"
+        label="所教课程">
+      </el-table-column>
+      <el-table-column
+        prop="className"
+        header-align="center"
+        align="center"
+        label="所在班级">
       </el-table-column>
       <el-table-column
         prop="email"
@@ -96,8 +112,10 @@
     data () {
       return {
         dataForm: {
-          userName: ''
+          userName: '',
+          role: null
         },
+        roleList: [],
         dataList: [],
         pageIndex: 1,
         pageSize: 10,
@@ -112,8 +130,20 @@
     },
     activated () {
       this.getDataList()
+      this.getRoles()
     },
     methods: {
+      getRoles () {
+        this.$http({
+          url: this.$http.adornUrl(`/sys/role/list`),
+          method: 'get',
+          params: this.$http.adornParams()
+        }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.roleList = data.page.list
+          }
+        })
+      },
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
@@ -123,7 +153,8 @@
           params: this.$http.adornParams({
             'page': this.pageIndex,
             'limit': this.pageSize,
-            'username': this.dataForm.userName
+            'username': this.dataForm.userName,
+            'roleId': this.dataForm.role
           })
         }).then(({data}) => {
           if (data && data.code === 0) {

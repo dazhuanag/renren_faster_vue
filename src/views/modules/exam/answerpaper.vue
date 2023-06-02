@@ -105,24 +105,21 @@
           </div>
           <div v-for="(question,index) in testpaper.questionList" class="questionClass2">
             {{index+1}}.{{question.content}} (总分:{{question.score}})
-            <div style="margin-top:10px;">
-              <el-image v-if="question.imgurl" :src="getImg(question.imgurl)"
-                        :preview-src-list="getPreviewImg(question.imgurl)" style="width: 200px; height: 200px">
-              </el-image>
-            </div>
             <div v-if="question.type=='简答题'" style="margin-top:10px;margin-bottom: 20px;">
               <div>
-                <el-input v-model="question.answer" disabled  type="textarea" :rows="5">
+                <el-input v-model="question.answer" disabled type="textarea" >
                 </el-input>
+                <el-image :src="question.imageUrl" fit="full"></el-image>
+                <img :src="question.imageUrl"  fix="full">
                 <div>
                   <h3>得分:
                     <input v-model="question.getScore" disabled>
                     </input>
                   </h3>
                 </div>
-              </div>
             </div>
-          </div>
+            </div>
+          </div>xi
         </div>
       </el-dialog>
     </div>
@@ -169,10 +166,8 @@
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.dataList = data.data
-            // this.totalPage = data.page.totalCount
           } else {
             this.dataList = []
-            // this.totalPage = 0
           }
           this.dataListLoading = false
         })
