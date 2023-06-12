@@ -109,8 +109,8 @@
               <div>
                 <el-input v-model="question.answer" disabled type="textarea" >
                 </el-input>
-                <el-image :src="question.imageUrl" fit="full"></el-image>
-                <img :src="question.imageUrl"  fix="full">
+<!--                <el-image :src="question.imageUrl" fit="contain"></el-image>-->
+                <img :src="question.imageUrl"  style="width: 80%; height:38%" >
                 <div>
                   <h3>得分:
                     <input v-model="question.getScore" disabled>
@@ -119,7 +119,7 @@
                 </div>
             </div>
             </div>
-          </div>xi
+          </div>
         </div>
       </el-dialog>
     </div>
